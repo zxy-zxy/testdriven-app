@@ -15,6 +15,35 @@ class TestUserService(BaseTestCase):
         db.session.commit()
         return user
 
+    def test_main_no_users(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'All Users', response.data)
+        self.assertIn(b'<p>No users!</p>', response.data)
+
+    def test_main_with_users(self):
+        TestUserService.add_user('test_user', 'test_user@mail.com')
+        TestUserService.add_user('test_user2', 'test_user2@mail.com')
+        with self.client:
+            response = self.client.get('/')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'All Users', response.data)
+            self.assertNotIn(b'<p>No users!</p>', response.data)
+            self.assertIn(b'test_user', response.data)
+            self.assertIn(b'test_user2', response.data)
+
+    def test_main_add_user(self):
+        with self.client:
+            response = self.client.post(
+                '/',
+                data=dict(username='test', email='test@mail.com'),
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'All Users', response.data)
+            self.assertNotIn(b'<p>No users!</p>', response.data)
+            self.assertIn(b'test', response.data)
+
     def test_users(self):
         response = self.client.get('/users/ping')
         data = json.loads(response.data.decode())
