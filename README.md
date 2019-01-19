@@ -7,3 +7,7 @@ I've used the twelve-factor app pattern as we develop and design each microservi
 Along with twelve-factor, i've also practiced with test-driven development (TDD), writing tests first when it makes sense to do so. 
 The focus will be on server-side unit, functional, and integration tests, 
 client-side unit tests, and end-to-end tests to ensure the entire system works as expected.
+
+
+
+[![Build Status](https://travis-ci.org/zxy-zxy/testdriven-app.svg?branch=master)](https://travis-ci.org/zxy-zxy/testdriven-app)
