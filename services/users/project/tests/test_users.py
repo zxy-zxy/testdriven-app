@@ -114,7 +114,8 @@ class TestUserService(BaseTestCase):
             self.assertIn('fail', data['status'])
 
     def test_single_user(self):
-        user = TestUserService.add_user(username='test_user', email='test_user@mail.com')
+        user = TestUserService.add_user(
+            username='test_user', email='test_user@mail.com')
 
         with self.client:
             response = self.client.get(f'/users/{user.id}')
@@ -141,8 +142,13 @@ class TestUserService(BaseTestCase):
             self.assertIn('fail', data['status'])
 
     def test_all_users(self):
-        TestUserService.add_user(username='test_user', email='test_user@mail.com')
-        TestUserService.add_user(username='test_user2', email='test_user2@mail.com')
+        TestUserService.add_user(
+            username='test_user',
+            email='test_user@mail.com')
+
+        TestUserService.add_user(
+            username='test_user2',
+            email='test_user2@mail.com')
 
         with self.client:
             response = self.client.get('/users')
@@ -150,9 +156,15 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(len(data['data']['users']), 2)
             self.assertIn('test_user', data['data']['users'][0]['username'])
-            self.assertIn('test_user@mail.com', data['data']['users'][0]['email'])
-            self.assertIn('test_user2', data['data']['users'][1]['username'])
-            self.assertIn('test_user2@mail.com', data['data']['users'][1]['email'])
+            self.assertIn(
+                'test_user@mail.com',
+                data['data']['users'][0]['email'])
+            self.assertIn(
+                'test_user2',
+                data['data']['users'][1]['username'])
+            self.assertIn(
+                'test_user2@mail.com',
+                data['data']['users'][1]['email'])
             self.assertIn('success', data['status'])
 
 

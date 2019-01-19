@@ -54,7 +54,7 @@ def add_user():
         response_object['status'] = 'success'
         response_object['message'] = f'{email} was added!'
         return jsonify(response_object), 201
-    except exc.IntegrityError as e:
+    except exc.IntegrityError:
         db.session.rollback()
         return jsonify(response_object), 400
 
