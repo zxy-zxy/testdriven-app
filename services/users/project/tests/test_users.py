@@ -1,19 +1,11 @@
 import json
 import unittest
 
-from project import db
 from project.tests.base import BaseTestCase
-from project.api.models import User
+from project.tests.utils import add_user
 
 
 class TestUserService(BaseTestCase):
-
-    @staticmethod
-    def add_user(username, email):
-        user = User(username=username, email=email)
-        db.session.add(user)
-        db.session.commit()
-        return user
 
     def test_main_no_users(self):
         response = self.client.get('/')
@@ -22,8 +14,8 @@ class TestUserService(BaseTestCase):
         self.assertIn(b'<p>No users!</p>', response.data)
 
     def test_main_with_users(self):
-        TestUserService.add_user('test_user', 'test_user@mail.com')
-        TestUserService.add_user('test_user2', 'test_user2@mail.com')
+        add_user('test_user', 'test_user@mail.com')
+        add_user('test_user2', 'test_user2@mail.com')
         with self.client:
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
@@ -114,7 +106,7 @@ class TestUserService(BaseTestCase):
             self.assertIn('fail', data['status'])
 
     def test_single_user(self):
-        user = TestUserService.add_user(
+        user = add_user(
             username='test_user', email='test_user@mail.com')
 
         with self.client:
@@ -142,11 +134,11 @@ class TestUserService(BaseTestCase):
             self.assertIn('fail', data['status'])
 
     def test_all_users(self):
-        TestUserService.add_user(
+        add_user(
             username='test_user',
             email='test_user@mail.com')
 
-        TestUserService.add_user(
+        add_user(
             username='test_user2',
             email='test_user2@mail.com')
 
