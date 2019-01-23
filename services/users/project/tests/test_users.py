@@ -14,8 +14,8 @@ class TestUserService(BaseTestCase):
         self.assertIn(b'<p>No users!</p>', response.data)
 
     def test_main_with_users(self):
-        add_user('test_user', 'test_user@mail.com')
-        add_user('test_user2', 'test_user2@mail.com')
+        add_user('test_user', 'test_user@mail.com', 'greaterthaneight')
+        add_user('test_user2', 'test_user2@mail.com', 'greaterthaneight')
         with self.client:
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
@@ -28,7 +28,11 @@ class TestUserService(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/',
-                data=dict(username='test', email='test@mail.com'),
+                data=dict(
+                    username='test',
+                    email='test@mail.com',
+                    password='greaterthaneight'
+                ),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
@@ -49,7 +53,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'test_user',
-                    'email': 'test_user@mail.com'
+                    'email': 'test_user@mail.com',
+                    'password': 'greaterthaneight',
                 }),
                 content_type='application/json',
             )
@@ -87,7 +92,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'test_user',
-                    'email': 'test_user@mail.com'
+                    'email': 'test_user@mail.com',
+                    'password': 'greaterthaneight',
                 }),
                 content_type='application/json',
             )
@@ -95,7 +101,8 @@ class TestUserService(BaseTestCase):
                 '/users',
                 data=json.dumps({
                     'username': 'test_user',
-                    'email': 'test_user@mail.com'
+                    'email': 'test_user@mail.com',
+                    'password': 'greaterthaneight',
                 }),
                 content_type='application/json',
             )
@@ -107,7 +114,10 @@ class TestUserService(BaseTestCase):
 
     def test_single_user(self):
         user = add_user(
-            username='test_user', email='test_user@mail.com')
+            username='test_user',
+            email='test_user@mail.com',
+            password='greaterthaneight'
+        )
 
         with self.client:
             response = self.client.get(f'/users/{user.id}')
@@ -136,11 +146,15 @@ class TestUserService(BaseTestCase):
     def test_all_users(self):
         add_user(
             username='test_user',
-            email='test_user@mail.com')
+            email='test_user@mail.com',
+            password='greaterthaneight',
+        )
 
         add_user(
             username='test_user2',
-            email='test_user2@mail.com')
+            email='test_user2@mail.com',
+            password='greaterthaneight',
+        )
 
         with self.client:
             response = self.client.get('/users')

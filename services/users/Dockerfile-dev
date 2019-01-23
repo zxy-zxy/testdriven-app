@@ -1,9 +1,10 @@
-FROM python:3.6.5-alpine
+# base image
+FROM python:3.7.2-slim
 
-RUN apk update && \
-    apk add --virtual build-deps gcc python-dev musl-dev && \
-    apk add postgresql-dev && \
-    apk add netcat-openbsd
+# install netcat
+RUN apt-get update && \
+    apt-get -y install netcat && \
+    apt-get clean
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
