@@ -2,7 +2,6 @@ import datetime
 
 from flask import current_app
 from sqlalchemy.sql import func
-import bcrypt
 import jwt
 from jwt.exceptions import PyJWTError
 
