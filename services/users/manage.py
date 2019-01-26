@@ -1,7 +1,7 @@
+import sys
 import unittest
 
 import coverage
-
 from flask.cli import FlaskGroup
 
 from project import create_app, db
@@ -35,7 +35,7 @@ def cov():
         COV.html_report()
         COV.erase()
         return 0
-    return 1
+    sys.exit(result)
 
 
 @cli.command()
@@ -51,7 +51,7 @@ def test():
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     if result.wasSuccessful():
         return 0
-    return 1
+    sys.exit(result)
 
 
 @cli.command()
