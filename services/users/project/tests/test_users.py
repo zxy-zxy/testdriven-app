@@ -15,7 +15,8 @@ class TestUserService(BaseTestCase):
             'authenticated_admin_user@mail.com',
             'greaterthaneight'
         )
-        user = User.query.filter_by(email='authenticated_admin_user@mail.com').first()
+        user = User.query.filter_by(
+            email='authenticated_admin_user@mail.com').first()
         user.admin = True
         db.session.commit()
         with self.client:
@@ -279,7 +280,10 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'fail')
-            self.assertIn('You do not have permission to do that.', data['message'])
+            self.assertIn(
+                'You do not have permission to do that.',
+                data['message']
+            )
 
 
 if __name__ == '__main__':
