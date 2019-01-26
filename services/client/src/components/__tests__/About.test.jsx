@@ -11,7 +11,6 @@ test('About renders properly', () => {
     expect(element.text()).toBe('Add something relevant here.');
 });
 
-
 test('About renders a snapshot properly', () => {
     const tree = renderer.create(<About/>).toJSON();
     expect(tree).toMatchSnapshot();
