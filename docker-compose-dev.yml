@@ -19,6 +19,47 @@ services:
     depends_on:
       - users-db
 
+  users-db:
+    build:
+      context: ./services/users/project/db
+      dockerfile: Dockerfile
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  client:
+    build:
+      context: ./services/client
+      dockerfile: Dockerfile-dev
+    volumes:
+      - './services/client:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - 3007:3000
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+      - REACT_APP_API_GATEWAY_URL=${REACT_APP_API_GATEWAY_URL}
+      - REACT_APP_EXERCISES_SERVICE_URL=${REACT_APP_EXERCISES_SERVICE_URL}
+      - REACT_APP_SCORES_SERVICE_URL=${REACT_APP_SCORES_SERVICE_URL}
+    depends_on:
+      - users
+
+  swagger:
+    build:
+      context: ./services/swagger
+      dockerfile: Dockerfile-dev
+    volumes:
+        - './services/swagger/swagger.json:/usr/share/nginx/html/swagger.json'
+    ports:
+      - '3008:8080'
+    environment:
+      - URL=swagger.json
+    depends_on:
+      - users
+
   exercises:
     build:
       context: ./services/exercises
@@ -38,16 +79,6 @@ services:
       - users
       - exercises-db
 
-  users-db:
-    build:
-      context: ./services/users/project/db
-      dockerfile: Dockerfile
-    ports:
-      - 5435:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-
   exercises-db:
     build:
       context: ./services/exercises/project/db
@@ -57,21 +88,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-
-  client:
-    build:
-      context: ./services/client
-      dockerfile: Dockerfile-dev
-    volumes:
-      - './services/client:/usr/src/app'
-      - '/usr/src/app/node_modules'
-    ports:
-      - 3007:3000
-    environment:
-      - NODE_ENV=development
-      - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
-    depends_on:
-      - users
 
   nginx:
     build:
@@ -84,15 +100,33 @@ services:
       - users
       - client
 
-  swagger:
+  scores:
     build:
-      context: ./services/swagger
+      context: ./services/scores
       dockerfile: Dockerfile-dev
     volumes:
-      - './services/swagger/swagger.json:/usr/share/nginx/html/swagger.json'
+      - './services/scores:/usr/src/app'
     ports:
-      - 3008:8080
+      - 5003:5000
     environment:
-      - URL=https://petstore.swagger.io/v2/swagger.json
+      - FLASK_ENV=development
+      - APP_SETTINGS=project.config.DevelopmentConfig
+      - SECRET_KEY=my_precious
+      - DATABASE_URL=postgres://postgres:postgres@scores-db:5432/scores_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@scores-db:5432/scores_test
+      - USERS_SERVICE_URL=http://users:5000
+      - EXERCISES_SERVICE_URL=http://exercises:5000
     depends_on:
       - users
+      - scores-db
+      - exercises
+
+  scores-db:
+    build:
+      context: ./services/scores/project/db
+      dockerfile: Dockerfile
+    ports:
+      - 5438:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
